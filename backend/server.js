@@ -39,16 +39,19 @@ app.post("/geocode", async (req, res) => {
     }
 });
 
-// 🚗 Route to get route directions including distance & duration
+// 🚗 Get Route & Custom Time Logic (Car, Bike, Walk)
 app.post("/route", async (req, res) => {
-    const { start, end } = req.body;
+    const { start, end, mode } = req.body;
 
     if (!start || !end) {
         return res.status(400).json({ error: "❌ Start and End locations are required" });
     }
 
+    const validModes = ["driving", "cycling", "foot"];
+    const transportMode = validModes.includes(mode) ? mode : "driving";
+
     try {
-        const response = await axios.get(`https://us1.locationiq.com/v1/directions/driving/${start.lon},${start.lat};${end.lon},${end.lat}`, {
+        const response = await axios.get(`https://us1.locationiq.com/v1/directions/${transportMode}/${start.lon},${start.lat};${end.lon},${end.lat}`, {
             params: {
                 key: LOCATIONIQ_API_KEY,
                 overview: "full",
@@ -63,17 +66,44 @@ app.post("/route", async (req, res) => {
         }
 
         const decodedCoordinates = polyline.decode(route.geometry);
+        const distanceKm = route.distance / 1000; // meters to km
+
+        // 🧮 Custom Time Logic (based on 15km examples you provided)
+        let customDurationMinutes = 0;
+
+        if (transportMode === "driving") {
+            customDurationMinutes = (distanceKm / 15) * 20;
+        } else if (transportMode === "cycling") {
+            customDurationMinutes = (distanceKm / 15) * 25;
+        } else if (transportMode === "foot") {
+            customDurationMinutes = (distanceKm / 15) * (3 * 60 + 28); // 3 hr 28 min
+        }
+
+        const customDurationSeconds = customDurationMinutes * 60;
 
         res.json({
             coordinates: decodedCoordinates,
             distance: route.distance,  // meters
-            duration: route.duration   // seconds
+            duration: customDurationSeconds, // seconds (for calculations if needed)
+            durationText: formatDuration(customDurationSeconds) // Human-readable string
         });
     } catch (error) {
-        console.error("❌ Route API error:", error.response?.data || error.message);
-        res.status(500).json({ error: "Error fetching route" });
+        console.error(`❌ ${mode.toUpperCase()} Route API error:`, error.response?.data || error.message);
+        res.status(500).json({ error: `Error fetching ${mode} route` });
     }
 });
+
+// ⏱️ Helper to format duration into "X hr Y min"
+function formatDuration(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours > 0) {
+        return `${hours} hr ${remainingMinutes} min`;
+    }
+    return `${minutes} min`;
+}
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

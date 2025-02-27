@@ -1,85 +1,248 @@
+/* Reset & Base */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color, #f4f4f4);
+    color: var(--text-color, #222);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Variables (you can toggle these via class) */
+body.dark-mode {
+    --background-color: #181818;
+    --text-color: #f4f4f4;
+}
+
+/* Fullscreen Map Container */
 .map-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* Fullscreen Map */
+.leaflet-map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Top Bar (Title) */
+.top-bar {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: var(--top-bar-bg, #222);
+    color: #fff;
+    text-align: center;
+    padding: 8px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* Floating Card - Glassmorphism Upgrade */
+.floating-card {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background-color: #f0f4f8;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.input-container {
-    display: flex;
     gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    background-color: #fff;
-    padding: 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
-    position: relative; /* Added for absolute suggestions positioning */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 1000;
+    animation: slideDown 0.5s ease;
 }
 
-.input-container input {
+/* Inputs Row */
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.input-row input {
     flex: 1;
-    min-width: 120px;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.input-container button {
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.input-container button:hover {
-    background-color: #0056b3;
-}
-
-.map-container .leaflet-container {
-    width: 100%;
-    height: 500px;
-    border-radius: 6px;
+    padding: 8px;
     border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.6);
 }
 
-.red-marker {
-    filter: hue-rotate(180deg) saturate(10) brightness(1.5);
-}
-
-/* New styles for autocomplete dropdown */
-.suggestions-dropdown {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    width: calc(100% - 16px);
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 10;
-    margin-top: 2px;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-size: 14px;
-}
-
-.suggestions-dropdown li {
+/* Icon Buttons with Tooltip */
+.input-row button {
     padding: 8px;
     cursor: pointer;
-    list-style: none;
-    transition: background-color 0.2s;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    position: relative;
+    transition: transform 0.2s ease;
 }
 
-.suggestions-dropdown li:hover {
-    background-color: #f0f0f0;
+.input-row button:hover {
+    transform: scale(1.1);
+}
+
+.input-row button::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.input-row button:hover::after {
+    opacity: 1;
+}
+
+/* Action Buttons (Bottom Row) */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 6px 0;
+}
+
+.action-buttons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.action-buttons button:hover {
+    transform: translateY(-2px);
+}
+
+.action-buttons button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+/* Animated Inline Info Badge */
+.inline-info {
+    font-size: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    animation: fadeInSlideUp 0.5s ease forwards;
+}
+
+/* Bottom Action Bar (Mobile Only) */
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Optional Info Box */
+.info-box {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.info-box.show {
+    opacity: 1;
+}
+
+/* Dark Mode */
+body.dark-mode .floating-card,
+body.dark-mode .bottom-bar {
+    background: rgba(40, 40, 40, 0.8);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Custom Marker Styling */
+.red-marker {
+    filter: hue-rotate(180deg) saturate(10);
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        transform: translateX(-50%) translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Tweaks */
+@media (max-width: 600px) {
+    .floating-card {
+        top: 10px;
+        width: 90%;
+    }
+
+    .bottom-bar {
+        display: flex;
+    }
+
+    .action-buttons {
+        display: none;
+    }
+}
+
+@media (min-width: 601px) {
+    .bottom-bar {
+        display: none;
+    }
 }
